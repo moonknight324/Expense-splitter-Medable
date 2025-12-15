@@ -83,16 +83,28 @@ function ExpenseList() {
                     <ul className="mt-1 space-y-1">
                       {expense.splitBetween.map(person => {
                         let amount = 0;
+                        const useOriginal = expense.originalCurrency && expense.originalCurrency !== 'USD' && expense.originalAmount;
+                        const totalAmount = useOriginal ? expense.originalAmount! : expense.amount;
+
                         if (expense.splitType === 'equal') {
-                          amount = expense.amount / expense.splitBetween.length;
+                          amount = totalAmount / expense.splitBetween.length;
                         } else if (expense.customAmounts) {
-                          amount = expense.customAmounts[person] || 0;
+                          const storedAmount = expense.customAmounts[person] || 0;
+                          if (useOriginal) {
+                            // Calculate rate from totals to reverse the conversion
+                            const rate = expense.originalAmount! / expense.amount;
+                            amount = storedAmount * rate;
+                          } else {
+                            amount = storedAmount;
+                          }
                         }
                         
+                        const currencyDisplay = useOriginal ? `${expense.originalCurrency} ` : '$';
+
                         return (
                           <li key={person} className="flex justify-between text-sm pl-2 border-l-2 border-indigo-200">
                             <span>{person}</span>
-                            <span className="font-medium">${amount.toFixed(2)}</span>
+                            <span className="font-medium">{currencyDisplay}{amount.toFixed(2)}</span>
                           </li>
                         );
                       })}
