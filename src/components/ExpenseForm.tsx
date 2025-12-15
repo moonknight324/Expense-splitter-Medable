@@ -109,15 +109,32 @@ function ExpenseForm() {
       }
     }
 
+    // Calculate amount in USD for internal logic
+    let amountInUSD = numAmount;
+    let customAmountsInUSD = { ...customAmounts };
+
+    if (currency !== 'USD' && rates[currency]) {
+      const rate = rates[currency];
+      amountInUSD = numAmount / rate;
+      
+      if (splitType === 'custom') {
+        Object.keys(customAmountsInUSD).forEach(person => {
+          customAmountsInUSD[person] = customAmountsInUSD[person] / rate;
+        });
+      }
+    }
+
     const newExpense: Expense = {
       id: Date.now(),
       description,
-      amount: numAmount,
+      amount: amountInUSD,
       paidBy,
       splitBetween,
       date,
       splitType,
-      customAmounts: splitType === 'custom' ? customAmounts : undefined
+      customAmounts: splitType === 'custom' ? customAmountsInUSD : undefined,
+      originalAmount: numAmount,
+      originalCurrency: currency
     };
 
     dispatch(addExpense(newExpense));
