@@ -61,7 +61,10 @@ function ExpenseList() {
                 </div>
                 <div className="flex items-center gap-4">
                   <span className="text-xl font-semibold text-gray-700">
-                    ${expense.amount.toFixed(2)}
+                    {expense.originalCurrency && expense.originalCurrency !== 'USD' && expense.originalAmount
+                      ? `${expense.originalCurrency} ${expense.originalAmount.toFixed(2)}`
+                      : `$${(expense.originalAmount || expense.amount).toFixed(2)}`
+                    }
                   </span>
                   <button
                     className={`bg-transparent text-gray-600 px-2 py-1 transition-transform duration-200 ${expandedId === expense.id ? 'rotate-90' : ''}`}
