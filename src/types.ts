@@ -7,6 +7,8 @@ export interface Expense {
   date: string;
   splitType: 'equal' | 'custom';
   customAmounts?: { [person: string]: number };
+  originalAmount?: number;
+  originalCurrency?: SupportedCurrency;
 }
 
 export interface Balance {
